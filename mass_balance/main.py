@@ -20,12 +20,12 @@ def start_draw():
     line, = axes.plot([], [],marker='o',linewidth=1.3, color='#17A2B8',markersize=3)
     return line,axes
 
-def update_graph(a,b,lin,ax):
+def update_graph(a,b,lin,ax,count):
     xdata.append(a)
     ydata.append(b)
     xmin, xmax = ax.get_xlim()
     if b >= xmax:
-        ax.set_xlim(xmin, 2*xmax)
+        ax.set_xlim(xmin, (2)*xmax)
         ax.relim()
         ax.autoscale_view()
     plt.title(r'$Mass : %.3f g$'%(a),loc='right', fontsize=10)
@@ -55,15 +55,18 @@ def main(time_tot,counter,tot_list,xdata,ydata):
         print(calib_factor)
         t3=time.time()
         while True:
+            if(counter%10==0):
+                np.save('readings.npy', np.array(tot_list))
             a,b=convert_arduino_to_number(ser.readline().decode("utf-8"))
             t4=time.time()
             temp_arr[0]=b
             temp_arr[1]=(t4-t3)
             tot_list.append(temp_arr)
-            update_graph(temp_arr[0],temp_arr[1],line,axes)
+            update_graph(temp_arr[0],temp_arr[1],line,axes,counter)
             plt.pause(1e-17)
             time.sleep(1)
             print(a)
+            counter+=1
 
 if __name__ == '__main__':
     time_tot,counter=0,0
